@@ -7,9 +7,17 @@ ms_token = os.environ.get(
 )  # set your own ms_token, think it might need to have visited a profile
 
 
-async def get_video_example():
+async def trending_videos():
     async with TikTokApi() as api:
         await api.create_sessions(ms_tokens=[ms_token], num_sessions=1, sleep_after=3)
+        async for video in api.trending.videos(count=30):
+            print(video)
+            print(video.as_dict)
+
+
+async def get_video_example():
+    async with TikTokApi() as api:
+        await api.create_sessions(ms_tokens=[ms_token], num_sessions=5, sleep_after=3)
         video = api.video(
             url="https://www.tiktok.com/@davidteathercodes/video/7074717081563942186"
         )
@@ -22,5 +30,9 @@ async def get_video_example():
         print(video_info)
 
 
-if __name__ == "__main__":
-    asyncio.run(get_video_example())
+# asyncio.run(get_video_example())
+        
+asyncio.run(trending_videos())
+
+print("done")
+
