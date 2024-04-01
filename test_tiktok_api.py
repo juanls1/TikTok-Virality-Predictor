@@ -18,10 +18,6 @@ async def foo():
             with open(f"{video.id}.mp4", "wb") as out:
                 out.write(video_bytes)
 
-    return videos
-
-videoss = asyncio.run(foo())
-
-
+asyncio.run(foo())
 
 print("done")
