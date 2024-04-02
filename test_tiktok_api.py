@@ -10,7 +10,7 @@ async def foo():
     async with TikTokApi() as api:
         await api.create_sessions(ms_tokens=[ms_token], num_sessions=1, sleep_after=3, headless=False) #headless=False is the unique change. It is needed to function properly
         videos = []
-        async for video in api.trending.videos(count=5):
+        async for video in api.trending.videos(count=2):
             print(video.id)
             videos.append(video)
             video_bytes = await video.bytes()

@@ -22,7 +22,7 @@ async def get_video_example():
             url="https://www.tiktok.com/@davidteathercodes/video/7074717081563942186"
         )
 
-        async for related_video in video.related_videos(count=10):
+        async for related_video in video.related_videos(count=2):
             print(related_video)
             print(related_video.as_dict)
 
