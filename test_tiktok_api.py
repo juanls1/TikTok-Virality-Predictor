@@ -16,6 +16,8 @@ ms_token = os.environ.get(
     "ms_token", None
 )  
 
+import asyncio
+
 async def main():
     if args.videos:
         if not os.path.exists("videos"):
@@ -29,16 +31,22 @@ async def main():
         
         async with TikTokApi() as api:
             await api.create_sessions(ms_tokens=[ms_token], num_sessions=1, sleep_after=3, headless=False)
-            videos = []
+            
+            download_tasks = []  # Lista para almacenar las tareas de descarga
             async for video in api.trending.videos(count=30):
                 if video.id not in downloaded_videos:
-                    videos.append(video)
-                    await download_video(video)
+                    # Programar la descarga del video de forma concurrente
+                    task = asyncio.create_task(download_video(video))
+                    download_tasks.append(task)
                 else:
                     print(f"Video {video.id} already downloaded. Skipping...")
+            
+            # Esperar a que todas las tareas de descarga se completen
+            await asyncio.gather(*download_tasks)
 
     if args.audio:
         extract_audio()
+
 
 def extract_audio():
     if not os.path.exists("audios"):
