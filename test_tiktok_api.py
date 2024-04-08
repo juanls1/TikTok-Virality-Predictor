@@ -4,6 +4,7 @@ import os
 import json
 from moviepy.editor import VideoFileClip
 import argparse
+import time
 
 parser = argparse.ArgumentParser(description="Descargar videos de TikTok y extraer audio.")
 parser.add_argument("-videos", help="Descargar videos", action="store_true")
@@ -19,12 +20,23 @@ async def main():
     if args.videos:
         if not os.path.exists("videos"):
             os.makedirs("videos")
+        if not os.path.exists("info.json"):
+            with open("info.json", "w") as out:
+                out.write("{}")
+        
+        with open("info.json", "r") as file:
+            downloaded_videos = json.load(file)
+        
         async with TikTokApi() as api:
             await api.create_sessions(ms_tokens=[ms_token], num_sessions=1, sleep_after=3, headless=False)
             videos = []
             async for video in api.trending.videos(count=30):
-                videos.append(video)
-                await download_video(video)
+                if video.id not in downloaded_videos:
+                    videos.append(video)
+                    await download_video(video)
+                else:
+                    print(f"Video {video.id} already downloaded. Skipping...")
+
     if args.audio:
         extract_audio()
 
@@ -48,16 +60,11 @@ async def download_video(video):
     print(f"Downloading {video.id}.mp4")
 
     try:
-
         video_bytes = await video.bytes()
         with open(f"{path}{video.id}.mp4", "wb") as out:
             out.write(video_bytes)
 
         print(f"Downloaded {video.id}.mp4")
-
-        if not os.path.exists("info.json"):
-            with open("info.json", "w") as out:
-                out.write("{}")
 
         with open("info.json", "r") as file:
             data = json.load(file)
