@@ -2,5 +2,6 @@ tiktok/
 __pycache__
 .pytest_cache/
 activateEnv.bat
-videos
+videos/
+audios/
 info.json

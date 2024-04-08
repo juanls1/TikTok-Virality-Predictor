@@ -2,20 +2,45 @@ from TikTokApi import TikTokApi
 import asyncio
 import os
 import json
+from moviepy.editor import VideoFileClip
+import argparse
+
+parser = argparse.ArgumentParser(description="Descargar videos de TikTok y extraer audio.")
+parser.add_argument("-videos", help="Descargar videos", action="store_true")
+parser.add_argument("-audio", help="Extraer audio de los videos descargados", action="store_true")
+args = parser.parse_args()
+
 
 ms_token = os.environ.get(
     "ms_token", None
 )  
 
 async def main():
-    if not os.path.exists("videos"):
-        os.makedirs("videos")
-    async with TikTokApi() as api:
-        await api.create_sessions(ms_tokens=[ms_token], num_sessions=1, sleep_after=3, headless=False) #headless=False is the unique change. It is needed to function properly
-        videos = []
-        async for video in api.trending.videos(count=30):
-            videos.append(video)
-            await download_video(video)
+    if args.videos:
+        if not os.path.exists("videos"):
+            os.makedirs("videos")
+        async with TikTokApi() as api:
+            await api.create_sessions(ms_tokens=[ms_token], num_sessions=1, sleep_after=3, headless=False)
+            videos = []
+            async for video in api.trending.videos(count=30):
+                videos.append(video)
+                await download_video(video)
+    if args.audio:
+        extract_audio()
+
+def extract_audio():
+    if not os.path.exists("audios"):
+        os.makedirs("audios")
+    for video_file in os.listdir("videos"):
+        if video_file.endswith(".mp4"):
+            video_path = os.path.join("videos", video_file)
+            audio_path = os.path.join("audios", video_file.replace(".mp4", "_audio.mp3"))
+            print(f"Extrayendo audio de {video_file}")
+            video_clip = VideoFileClip(video_path)
+            audio_clip = video_clip.audio
+            audio_clip.write_audiofile(audio_path)
+            audio_clip.close()
+            video_clip.close()
 
 
 async def download_video(video):
@@ -72,5 +97,4 @@ async def download_video(video):
 
     
 if __name__ == "__main__":
-    for i in range(30):
-        asyncio.run(main())
+    asyncio.run(main())
