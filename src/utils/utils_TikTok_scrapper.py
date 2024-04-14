@@ -33,7 +33,7 @@ async def main():
             await api.create_sessions(ms_tokens=[ms_token], num_sessions=1, sleep_after=3, headless=False)
             
             download_tasks = []  # Lista para almacenar las tareas de descarga
-            async for video in api.trending.videos(count=30):
+            async for video in api.trending.videos(count=15):
                 if video.id not in downloaded_videos:
                     # Programar la descarga del video de forma concurrente
                     task = asyncio.create_task(download_video(video))
