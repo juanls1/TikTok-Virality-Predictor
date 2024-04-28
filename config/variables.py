@@ -14,4 +14,8 @@ indiv_sample_path = 'data/inputs/audios/6875370613523909890_audio.mp3'
 
 # Text
 
+# Ruta de los archivos de texto
 text_path = 'data/inputs/texts/'
+
+# Ruta del archivo JSON
+json_file = 'data/inputs/tiktok_info.json'

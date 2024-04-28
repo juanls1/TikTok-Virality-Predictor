@@ -5,3 +5,6 @@ activateEnv.bat
 videos/
 audios/
 info.json
+ffmpeg.exe
+ffplay.exe
+ffprobe.exe
