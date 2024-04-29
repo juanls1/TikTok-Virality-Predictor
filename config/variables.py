@@ -19,3 +19,36 @@ text_path = 'data/inputs/texts/'
 
 # Path to the JSON file
 json_file = 'data/inputs/tiktok_info.json'
+
+# Language map from language codes to full language names
+language_map = {
+    'ar': 'arabic',
+    'az': 'azerbaijani',
+    'eu': 'basque',
+    'bn': 'bengali',
+    'ca': 'catalan',
+    'zh-cn': 'chinese',
+    'da': 'danish',
+    'nl': 'dutch',
+    'en': 'english',
+    'fi': 'finnish',
+    'fr': 'french',
+    'de': 'german',
+    'el': 'greek',
+    'he': 'hebrew',
+    'hi': 'hindi',
+    'hu': 'hungarian',
+    'id': 'indonesian',
+    'it': 'italian',
+    'kk': 'kazakh',
+    'ne': 'nepali',
+    'no': 'norwegian',
+    'pt': 'portuguese',
+    'ro': 'romanian',
+    'ru': 'russian',
+    'sl': 'slovene',
+    'es': 'spanish',
+    'sv': 'swedish',
+    'tg': 'tajik',
+    'tr': 'turkish'
+}
