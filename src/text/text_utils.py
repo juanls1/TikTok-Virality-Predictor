@@ -27,6 +27,7 @@ import gensim
 from gensim import corpora
 from textblob import TextBlob
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
+import numpy as np
 
 from config.variables import language_map
 
@@ -287,3 +288,15 @@ def count_sentiments(data):
             transcription_count = sentiment_counts_transcription[sentiment]
             print("{:<10} {:<10} {:<10}".format(sentiment, text_count, transcription_count))
         print('\n')
+        
+        
+# Function to generate embeddings for hashtags
+def generate_hashtag_embeddings(hashtags, hashtag_model):
+    embeddings = []
+    for hashtag in hashtags:
+        if hashtag in hashtag_model.wv:
+            embeddings.append(hashtag_model.wv[hashtag])
+        else:
+            # If the hashtag is not in the vocabulary, use a zero vector
+            embeddings.append(np.zeros(hashtag_model.vector_size))
+    return embeddings
