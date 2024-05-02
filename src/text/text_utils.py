@@ -289,19 +289,6 @@ def count_sentiments(data):
             transcription_count = sentiment_counts_transcription[sentiment]
             print("{:<10} {:<10} {:<10}".format(sentiment, text_count, transcription_count))
         print('\n')
-        
-        
-# Function to generate embeddings for hashtags
-def generate_hashtag_embeddings(hashtags, hashtag_model):
-    embeddings = []
-    for hashtag in hashtags:
-        if hashtag in hashtag_model.wv:
-            embeddings.append(hashtag_model.wv[hashtag])
-        else:
-            # If the hashtag is not in the vocabulary, use a zero vector
-            embeddings.append(np.zeros(hashtag_model.vector_size))
-    return embeddings
-
 
 # Metrics
 def calculate_metrics(y_true, y_pred):
@@ -310,3 +297,7 @@ def calculate_metrics(y_true, y_pred):
     mae = mean_absolute_error(y_true, y_pred)
     mape = np.mean(np.abs((y_true - y_pred) / y_true)) * 100
     return rmse, mse, mae, mape
+
+# Concatenate the embeddings of each observation into a single vector
+def concatenate_embeddings(row, df):
+    return np.concatenate([np.array(row[col]) for col in df.columns])
