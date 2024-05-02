@@ -23,6 +23,9 @@ json_file = 'data/inputs/tiktok_info.json'
 # Path to the CSV file
 csv_file = 'data/inputs/virality_info.csv'
 
+# Path to the Text CSV file
+textcsv_file = 'src/text'
+
 # Language map from language codes to full language names
 language_map = {
     'ar': 'arabic',

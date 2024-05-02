@@ -28,6 +28,7 @@ from gensim import corpora
 from textblob import TextBlob
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import numpy as np
+from sklearn.metrics import mean_squared_error, mean_absolute_error
 
 from config.variables import language_map
 
@@ -300,3 +301,12 @@ def generate_hashtag_embeddings(hashtags, hashtag_model):
             # If the hashtag is not in the vocabulary, use a zero vector
             embeddings.append(np.zeros(hashtag_model.vector_size))
     return embeddings
+
+
+# Metrics
+def calculate_metrics(y_true, y_pred):
+    rmse = np.sqrt(mean_squared_error(y_true, y_pred))
+    mse = mean_squared_error(y_true, y_pred)
+    mae = mean_absolute_error(y_true, y_pred)
+    mape = np.mean(np.abs((y_true - y_pred) / y_true)) * 100
+    return rmse, mse, mae, mape
