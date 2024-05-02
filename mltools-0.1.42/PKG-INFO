@@ -1,0 +1,42 @@
+Metadata-Version: 2.1
+Name: mltools
+Version: 0.1.42
+Summary: Machine Learning functions aiming to help in the Machine Learning course at ICAI
+License: GNU General Public License v3.0
+Author: Jaime Pizarroso
+Requires-Python: >=3.9,<4.0
+Classifier: License :: Other/Proprietary License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.9
+Requires-Dist: matplotlib (>=3.5.2,<4.0.0)
+Requires-Dist: numpy (>=1.22.0,<2.0.0)
+Requires-Dist: pandas (>=2.0.0,<3.0.0)
+Description-Content-Type: text/markdown
+
+# mltools
+
+Machine Learning functions aiming to help in the Machine Learning course at ICAI
+
+## Installation
+
+```bash
+$ pip install mltools
+```
+
+## Usage
+
+- TODO
+
+## Contributing
+
+Interested in contributing? Check out the contributing guidelines. Please note that this project is released with a Code of Conduct. By contributing to this project, you agree to abide by its terms.
+
+## License
+
+`mltools` was created by Jaime Pizarroso. It is licensed under the terms of the GNU General Public License v3.0 license.
+
+## Credits
+
+`mltools` was created with [`cookiecutter`](https://cookiecutter.readthedocs.io/en/latest/) and the `py-pkgs-cookiecutter` [template](https://github.com/py-pkgs/py-pkgs-cookiecutter).
+
