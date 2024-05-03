@@ -300,3 +300,6 @@ def calculate_metrics(y_true, y_pred):
 # Concatenate the embeddings of each observation into a single vector
 def concatenate_embeddings(row, df):
     return np.concatenate([np.array(row[col]) for col in df.columns])
+
+def count_parameters(model):
+    return sum(p.numel() for p in model.parameters() if p.requires_grad)
