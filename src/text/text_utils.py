@@ -29,6 +29,7 @@ from textblob import TextBlob
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import numpy as np
 from sklearn.metrics import mean_squared_error, mean_absolute_error
+from torch.utils.data import Dataset
 
 from config.variables import language_map
 
@@ -303,3 +304,22 @@ def concatenate_embeddings(row, df):
 
 def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
+
+
+class CustomDataset(Dataset):
+    def __init__(self, texts, targets, tokenizer, max_length=514):
+        self.texts = texts
+        self.targets = targets
+        self.tokenizer = tokenizer
+        self.max_length = max_length
+
+    def __len__(self):
+        return len(self.texts)
+
+    def __getitem__(self, idx):
+        text = self.texts[idx]
+        inputs = self.tokenizer(text, padding='max_length', truncation=True, max_length=self.max_length, return_tensors='pt')
+        input_ids = inputs['input_ids'].squeeze(0)  # Squeeze to remove the extra dimension
+        attention_mask = inputs['attention_mask'].squeeze(0)  # Squeeze to remove the extra dimension
+        target = self.targets[idx]
+        return input_ids, attention_mask, target

@@ -1,6 +1,8 @@
 import sys
 from pathlib import Path
 import os
+import csv 
+import numpy as np
 
 # Obtener la ruta absoluta de la carpeta que contiene el módulo
 root_dir = Path.cwd().resolve().parent.parent
@@ -11,6 +13,9 @@ sys.path.append(str(root_dir))
 import subprocess
 from langdetect import detect
 import speech_recognition as sr
+import sklearn.preprocessing
+import struct
+import librosa
 
 from config.variables import ffmpeg_path
 
@@ -45,3 +50,64 @@ def detect_language(audio_file):
             return language
         except:
             return "en-EN"  # Establece un idioma predeterminado en caso de error
+
+class WavFileHelper():
+    
+    def read_file_properties(self, filename):
+
+        wave_file = open(filename,"rb")
+        
+        riff = wave_file.read(12)
+        fmt = wave_file.read(36)
+        
+        num_channels_string = fmt[10:12]
+        num_channels = struct.unpack('<H', num_channels_string)[0]
+
+        sample_rate_string = fmt[12:16]
+        sample_rate = struct.unpack("<I",sample_rate_string)[0]
+        
+        bit_depth_string = fmt[22:24]
+        bit_depth = struct.unpack("<H",bit_depth_string)[0]
+
+        return (num_channels, sample_rate, bit_depth)
+    
+# Normalising the spectral centroid for visualisation
+def normalize(x, axis=0):
+    return sklearn.preprocessing.minmax_scale(x, axis=axis)
+
+
+def open_csv_file(file_path, header):
+    """
+    Open a CSV file for writing and write the header.
+    """
+    file = open(file_path, 'w', newline='')
+    writer = csv.writer(file)
+    writer.writerow(header)
+    return file, writer
+
+def load_audio_features(audio_file):
+    """
+    Load audio file and extract features.
+    """
+    y, sr = librosa.load(audio_file, mono=True)
+    chroma_stft = librosa.feature.chroma_stft(y=y, sr=sr)
+    spec_cent = librosa.feature.spectral_centroid(y=y, sr=sr)
+    spec_bw = librosa.feature.spectral_bandwidth(y=y, sr=sr)
+    rolloff = librosa.feature.spectral_rolloff(y=y, sr=sr)
+    zcr = librosa.feature.zero_crossing_rate(y)
+    mfcc = librosa.feature.mfcc(y=y, sr=sr)
+
+    features = [np.mean(feature) for feature in [chroma_stft, spec_cent, spec_bw, rolloff, zcr]]
+    features += [np.mean(m) for m in mfcc]
+
+    return features
+
+def fetch_virality(video_id, df):
+    """
+    Fetch virality information from DataFrame based on video ID.
+    """
+    virality_row = df[df['id'] == video_id]
+    if not virality_row.empty:
+        return virality_row['norm_virality'].values[0]
+    else:
+        return 'N/A'
