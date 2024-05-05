@@ -11,4 +11,4 @@ ffprobe.exe
 trending.json
 audd
 frames/
-outputs/texts/
+texts/
