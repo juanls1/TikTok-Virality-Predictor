@@ -12,3 +12,4 @@ trending.json
 audd
 frames/
 texts/
+*.weights.h5
