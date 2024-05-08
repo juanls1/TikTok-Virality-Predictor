@@ -11,5 +11,5 @@ ffprobe.exe
 trending.json
 audd
 frames/
-texts/
+outputs/
 *.weights.h5
