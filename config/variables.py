@@ -17,6 +17,10 @@ wav_path = 'data/inputs/wav/'
 audio_path = 'data/inputs/audios/'
 indiv_sample_path = 'data/inputs/audios/6875370613523909890_audio.mp3'
 
+# Path to the best model trained
+
+audio_model_path = 'data/outputs/audio/'
+
 
 # Text
 

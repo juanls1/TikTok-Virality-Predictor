@@ -16,6 +16,7 @@ import speech_recognition as sr
 import sklearn.preprocessing
 import struct
 import librosa
+from torch.utils.data import Dataset
 
 from config.variables import ffmpeg_path
 
@@ -111,3 +112,26 @@ def fetch_virality(video_id, df):
         return virality_row['norm_virality'].values[0]
     else:
         return 'N/A'
+    
+class AudioDataset(Dataset):
+    def __init__(self, audio_folder, labels_df, feature_extractor):
+        self.audio_folder = audio_folder
+        self.labels_df = labels_df
+        self.feature_extractor = feature_extractor
+
+    def __len__(self):
+        return len(self.labels_df)
+
+    def __getitem__(self, idx):
+        audio_name = os.path.join(self.audio_folder, f"{self.labels_df.iloc[idx]['id']}_audio.wav")
+        label = self.labels_df.iloc[idx]['norm_virality']
+        
+        y, sr = librosa.load(audio_name, sr = 16000)
+
+        # Extract features using the model
+        inputs = self.feature_extractor(y, sampling_rate=sr, return_tensors="pt")
+        
+        # Squeeze singleton dimension
+        inputs["input_values"] = inputs["input_values"].squeeze(0)
+
+        return inputs, label
