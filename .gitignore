@@ -13,3 +13,4 @@ audd
 frames/
 texts/
 *.weights.h5
+*.pth
