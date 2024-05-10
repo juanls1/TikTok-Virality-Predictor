@@ -12,6 +12,7 @@ trending.json
 audd
 frames/
 *.weights.h5
+*.h5
 *.pth
 prueba.ipynb
 *.mp4
