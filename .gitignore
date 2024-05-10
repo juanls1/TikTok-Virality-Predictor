@@ -13,7 +13,6 @@ audd
 frames/
 *.weights.h5
 *.h5
-*.keras
 *.pth
 prueba.ipynb
 *.mp4
