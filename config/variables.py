@@ -31,7 +31,7 @@ text_path = 'data/inputs/texts/'
 json_file = 'data/inputs/tiktok_info.json'
 
 # Path to the Text CSV file
-textcsv_file = 'src/text'
+textcsv_file = 'src/text/embeddings.csv'
 
 # Language map from language codes to full language names
 language_map = {
