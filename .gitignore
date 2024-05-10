@@ -11,7 +11,6 @@ ffprobe.exe
 trending.json
 audd
 frames/
-outputs/
 *.weights.h5
 *.pth
 prueba.ipynb
