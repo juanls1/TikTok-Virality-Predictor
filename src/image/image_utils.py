@@ -15,7 +15,7 @@ def try_capture_frame(cap, frame_id):
     print("No valid frames available to capture.")
     return None, False, -1
 
-def extract_frames():
+def extract_frames(n_frames):
     video_dir = '../../data/inputs/videos'
     frame_dir = '../../data/inputs/frames'
 
@@ -28,7 +28,7 @@ def extract_frames():
         video_path = os.path.join(video_dir, video)
         cap = cv2.VideoCapture(video_path)
         frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-        frame_ids = [round(i) for i in np.linspace(0, frame_count - 1, 8)]
+        frame_ids = [round(i) for i in np.linspace(0, frame_count - 1, n_frames)]
         success_count = 0  
         for count, frame_id in enumerate(frame_ids):
             frame, success, id = try_capture_frame(cap, frame_id)
@@ -41,8 +41,8 @@ def extract_frames():
 
         cap.release()
 
-        if success_count != 8:
-            missing_frames = [i for i in range(8) if i not in range(success_count)]
+        if success_count != n_frames:
+            missing_frames = [i for i in range(n_frames) if i not in range(success_count)]
             print(f"Warning: Not all frames were extracted from {video}. Missing frames: {missing_frames}")
 
     print("Frames extraction completed")

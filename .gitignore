@@ -14,3 +14,5 @@ frames/
 outputs/
 *.weights.h5
 *.pth
+prueba.ipynb
+*.mp4
