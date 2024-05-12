@@ -77,12 +77,13 @@ pip install -r requirements.txt
 
   - **utils**: Main utility functions, separate from specific utilities: 
     - `utils_audio_extractor.py`: Audio extraction functions
+    - `utils_streamlit.py`: Streamlit utility functions
     - `utils_TikTok_scrapper.py`: TikTok manual scrapper functions
     - `utils_json_formatting.py`: JSON formatting functions for the Kaggle RAW JSON
     - `utils_ids_counter.py`: IDs counter for the Kaggle RAW JSON
 
   - **streamlit**: Streamlit app
-    - `streamlit_app.py`: Streamlit app for the project
+    - `app.py`: Streamlit app for the project
 
   - `project.ipynb`: Main file explaining the project, its steps and results.
 
