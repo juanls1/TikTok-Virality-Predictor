@@ -16,13 +16,16 @@ sys.path.append(str(root_dir))
 from config.variables import text_path, json_file, csv_file, textcsv_file
 
 def load_images(num_frames=8, img_height=224, img_width=224):
+    """
+    Load images from frames directory.
+    """
     dir = os.path.join(root_dir, 'data', 'inputs', 'frames')
     csv_path = os.path.join(root_dir, csv_file)
     df = pd.read_csv(csv_path, dtype={'id': str})
     X = []
     y = []
 
-    # Iterar sobre cada fila del DataFrame
+    # Iterate over each row in the DataFrame
     for idx, row in df.iterrows():
         id_video = row['id']
         print(id_video)
@@ -46,6 +49,9 @@ def load_images(num_frames=8, img_height=224, img_width=224):
 
 
 def train_and_metrics_pretrained(model, train_loader, optimizer, device, mse_metric, rmse_metric, mae_metric):
+    """
+    Train the model and compute metrics on training data.
+    """
     model.train()
     total_loss = 0
     mse_metric.reset()
@@ -76,23 +82,26 @@ def train_and_metrics_pretrained(model, train_loader, optimizer, device, mse_met
 
 
 def validate_pretrained(model, loader, device, mse_metric, rmse_metric, mae_metric):
-    model.eval()  # Pone el modelo en modo evaluación
+    """
+    Validate the model and compute metrics on validation data.
+    """
+    model.eval()  # Set the model to evaluation mode
     total_loss = 0
     mse_metric.reset()
     rmse_metric.reset()
     mae_metric.reset()
 
-    # Asegurarte de que la métrica se ejecute en el dispositivo adecuado
+    # Make sure the metric runs on the appropriate device
     mse_metric.to(device)
     rmse_metric.to(device)
     mae_metric.to(device)
 
-    with torch.no_grad():  # Instruye a PyTorch que no gestione gradientes durante la validación
+    with torch.no_grad():  # Instruct PyTorch not to manage gradients during validation
         for batch in tqdm(loader, desc="Validation", leave=False):
-            inputs = batch['image'].to(device)  # Envía las entradas a la GPU
-            targets = batch['label'].to(device)  # Envía las etiquetas a la GPU
+            inputs = batch['image'].to(device)  # Send inputs to GPU
+            targets = batch['label'].to(device)  # Send labels to GPU
             outputs = model(inputs)
-            outputs = torch.squeeze(outputs)  # Ajustar las dimensiones si es necesario
+            outputs = torch.squeeze(outputs)  # Adjust dimensions if necessary
             
             loss = nn.functional.mse_loss(outputs, targets)
             total_loss += loss.item()
@@ -108,6 +117,9 @@ def validate_pretrained(model, loader, device, mse_metric, rmse_metric, mae_metr
     return mean_loss, mse.item(), rmse.item(), mae.item()
 
 def train_and_metrics_3dcnn(model, data_loader, optimizer, device, mse, rmse, mae):
+    """
+    Train 3D CNN model and compute metrics.
+    """
     model.train()
     total_loss, total_mse, total_rmse, total_mae, count = 0, 0, 0, 0, 0
     progress_bar = tqdm(data_loader, desc='Training', leave=False)
@@ -122,7 +134,7 @@ def train_and_metrics_3dcnn(model, data_loader, optimizer, device, mse, rmse, ma
         loss.backward()
         optimizer.step()
 
-        # Actualización de la barra de progreso con información de la pérdida
+        # Update progress bar with loss information
         progress_bar.set_postfix({'loss': loss.item()})
 
         total_loss += loss.item() * inputs.size(0)
@@ -134,6 +146,9 @@ def train_and_metrics_3dcnn(model, data_loader, optimizer, device, mse, rmse, ma
     return total_loss / count, total_mse / count, total_rmse / count, total_mae / count
 
 def validate_3dcnn(model, data_loader, device, mse, rmse, mae):
+    """
+    Validate 3D CNN model and compute metrics.
+    """
     model.eval()
     total_loss, total_mse, total_rmse, total_mae, count = 0, 0, 0, 0, 0
     progress_bar = tqdm(data_loader, desc='Validation', leave=False)
@@ -146,7 +161,7 @@ def validate_3dcnn(model, data_loader, device, mse, rmse, mae):
             outputs = outputs.squeeze()
             loss = F.mse_loss(outputs, labels)
 
-            # Actualización de la barra de progreso
+            # Update progress bar
             progress_bar.set_postfix({'val_loss': loss.item()})
 
             total_loss += loss.item() * inputs.size(0)
@@ -158,14 +173,21 @@ def validate_3dcnn(model, data_loader, device, mse, rmse, mae):
     return total_loss / count, total_mse / count, total_rmse / count, total_mae / count
 
 def rmse_3dcnn(outputs, labels):
+    """
+    Compute RMSE for 3D CNN.
+    """
     return torch.sqrt(F.mse_loss(outputs, labels))
 
 def mae_3dcnn(outputs, labels):
+    """
+    Compute MAE for 3D CNN.
+    """
     return F.l1_loss(outputs, labels)
 
-
-
 def try_capture_frame(cap, frame_id):
+    """
+    Try to capture a frame from video.
+    """
     while frame_id >= 0:
         cap.set(cv2.CAP_PROP_POS_FRAMES, frame_id)
         ret, frame = cap.read()
@@ -177,6 +199,9 @@ def try_capture_frame(cap, frame_id):
     return None, False, -1
 
 def extract_frames(n_frames):
+    """
+    Extract frames from videos.
+    """
     video_dir = '../../data/inputs/videos'
     frame_dir = '../../data/inputs/frames'
 
@@ -209,19 +234,25 @@ def extract_frames(n_frames):
     print("Frames extraction completed")
 
 def remove_mp4_extensions():
+    """
+    Remove mp4 extensions from frame filenames.
+    """
     frame_dir = '../../data/inputs/frames'
     files = os.listdir(frame_dir)
     for file in files:
         if '_frame_' in file and file.endswith('.png'):
             new_name = file.replace('.mp4', '')
             os.rename(os.path.join(frame_dir, file), os.path.join(frame_dir, new_name))
-            print(f"Archivo renombrado de {file} a {new_name}")
+            print(f"Rename file from {file} to {new_name}")
 
 def rename_frames_ids():
+    """
+    Rename frames IDs to make them consecutive.
+    """
     frame_dir = '../../data/inputs/frames'
     frames_dict = {}
     
-    # Recolectar todos los nombres de archivo por ID
+    # Collect all file names by ID
     for filename in os.listdir(frame_dir):
         if filename.endswith(".png"):
             parts = filename.split('_')
@@ -231,14 +262,14 @@ def rename_frames_ids():
             else:
                 frames_dict[id_video] = [filename]
 
-    # Renombrar los archivos para que sean consecutivos por cada ID
+    # Rename files to be consecutive for each ID
     for id_video, filenames in frames_dict.items():
-        # Ordenar los nombres de archivo por el número de frame actual
+        # Sort file names by current frame number
         filenames.sort(key=lambda x: int(x.split('_')[2].split('.')[0]))
         
-        # Renombrar los archivos
+        # Rename the files
         for i, filename in enumerate(filenames):
             nuevo_nombre = f"{id_video}_frame_{i}.png"
             os.rename(os.path.join(frame_dir, filename), os.path.join(frame_dir, nuevo_nombre))
-            print(f"Renombrado: {filename} a {nuevo_nombre}")
+            print(f"Renamed: {filename} to {nuevo_nombre}")
 

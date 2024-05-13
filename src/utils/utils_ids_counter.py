@@ -4,32 +4,32 @@ import sys
 from pathlib import Path
 import os
 
-# Obtener la ruta absoluta de la carpeta que contiene el módulo
+# Get the absolute path of the folder containing the module
 root_dir = Path(__file__).resolve().parent.parent.parent
 
-# Agregar la ruta de la carpeta al sys.path
+# Add the folder path to sys.path
 sys.path.append(str(root_dir))
 
 def contar_ids_tiktok(filename):
-    # Lista para almacenar los IDs únicos
+    # List to store unique IDs
     ids = []
 
-    # Cargar el archivo JSON
+    # Load the JSON file
     with open(filename, "r") as json_file:
         tiktok_info = json.load(json_file)
 
-    # Iterar sobre cada TikTok y obtener su ID
+    # Iterate over each TikTok and get its ID
     for tiktok_id in tiktok_info:
         ids.append(tiktok_id)
 
-    # Contar los IDs únicos
-    ids_unicos = len(set(ids))
+    # Count unique IDs
+    unique_ids_count = len(set(ids))
 
-    return ids_unicos
+    return unique_ids_count
 
-# Nombre del archivo JSON
+# JSON file name
 filename = os.path.join(root_dir,"data\\inputs\\tiktok_info.json")
 
-# Llamar a la función para contar los IDs únicos
-cantidad_ids = contar_ids_tiktok(filename)
-print("Número de IDs únicos en tiktok_info.json:", cantidad_ids)
+# Call the function to count unique IDs
+unique_ids_count = contar_ids_tiktok(filename)
+print("Number of unique IDs in tiktok_info.json:", unique_ids_count)

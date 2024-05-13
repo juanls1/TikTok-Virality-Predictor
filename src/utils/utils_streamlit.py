@@ -17,10 +17,10 @@ from transformers import CLIPProcessor, CLIPModel
 import sys
 from pathlib import Path
 
-# Obtener la ruta absoluta de la carpeta que contiene el módulo
+# Get the absolute path of the folder containing the module
 root_dir = Path.cwd().resolve().parent.parent
 
-# Agregar la ruta de la carpeta al sys.path
+# Add the folder path to sys.path
 sys.path.append(str(root_dir))
 
 from config.variables import model_paths
@@ -28,6 +28,7 @@ from src.text.text_utils import CustomDataset
 from src.audio.audio_utils import load_audio_features
 
 def extract_audio(video_bytes):
+    # Extracts audio from the uploaded video file
     if video_bytes:
         # Save the uploaded file temporarily
         with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as temp_file:
@@ -44,38 +45,38 @@ def extract_audio(video_bytes):
         return audio_tempfile.name
     
 def extract_multimodal_features(video_bytes, transcription, hashtags, caption):
-    # Componer el texto multimodal
+    # Composes the multimodal text
     text = f"Transcription: {transcription}. Caption: {caption}. Hashtags: {hashtags}"
     
-    # Preparar la variable para almacenar el frame del medio
+    # Prepare variable to store the middle frame
     middle_frame = None
 
     if video_bytes:
         with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as temp_file:
             temp_file.write(video_bytes)
-            temp_file.flush()  # Asegurar que todos los bytes están escritos
+            temp_file.flush()  # Ensure all bytes are written
             temp_file_path = temp_file.name
             
-            # Cargar el video para extraer el frame del medio
+            # Load the video to extract the middle frame
             cap = cv2.VideoCapture(temp_file_path)
             frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
             middle_frame_index = frame_count // 2
             cap.set(cv2.CAP_PROP_POS_FRAMES, middle_frame_index)
             success, middle_frame = cap.read()
 
-            # Verificar que se haya capturado correctamente el frame
+            # Check if the frame was captured successfully
             if not success:
-                print("Error: No se pudo capturar el frame del medio del video.")
+                print("Error: Could not capture middle frame of the video.")
             
-            cap.release()  # Liberar el recurso
+            cap.release()  # Release the resource
     
-    # Devolver el texto multimodal y el frame del medio
+    # Return the multimodal text and the middle frame
     return text, middle_frame
     
 
 def clean_hashtags(hashtags):
+    # Cleans the hashtags removing also the # symbol
     if hashtags:
-        # Clean the hashtags removing also the # symbol
         clean_hashtags = [hashtag.replace("#", "").strip(" ") for hashtag in hashtags.split(",")]
         return clean_hashtags
     else:
@@ -83,7 +84,7 @@ def clean_hashtags(hashtags):
     
     
 def create_text_prediction(text):
-    
+    # Creates a virality prediction based on text input
     text_model = AutoModelForMaskedLM.from_pretrained("xlm-roberta-base")
     config = AutoConfig.from_pretrained("xlm-roberta-base")
     tokenizer = AutoTokenizer.from_pretrained('xlm-roberta-base')
@@ -111,6 +112,7 @@ def create_text_prediction(text):
 
 
 def create_multimodal_prediction(text, image):
+    # Creates a virality prediction based on multimodal input (text and image)
     processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
     clip_model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
     model = CLIPRegressor(clip_model)
@@ -127,6 +129,7 @@ def create_multimodal_prediction(text, image):
 
 
 def create_audio_prediction(audio_wav):
+    # Creates a virality prediction based on audio features
     model = load_model(os.path.join(root_dir, model_paths["audio_model"]))
     
     features = load_audio_features(audio_wav)
@@ -138,45 +141,48 @@ def create_audio_prediction(audio_wav):
     return float(prediction[0])
 
 def create_image_prediction(images):
+    # Creates a virality prediction based on image features
     image_model = load_model(os.path.join(root_dir, model_paths["image_model"]))
 
     if len(images) != 8:
-        raise ValueError("Se esperan exactamente 8 imágenes para la predicción.")
+        raise ValueError("Exactly 8 images are expected for prediction.")
 
-    images_array = np.stack(images)  # Esto combina las imágenes en un array de forma (8, 224, 224, 3)
+    images_array = np.stack(images)  # Combines images into an array of shape (8, 224, 224, 3)
     images_array = np.expand_dims(images_array, axis=0)
     
-    prediction = image_model.predict(images)
+    prediction = image_model.predict(images_array)
     
     return float(prediction[0])
     
     
 def extract_frames(video_bytes, n_frames=8):
+    # Extracts frames from the uploaded video file
     if video_bytes:
         with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as temp_file:
             temp_file.write(video_bytes)
-            temp_file.flush()  # Asegurar que todos los bytes están escritos
+            temp_file.flush()  # Ensure all bytes are written
             temp_file_path = temp_file.name
         
         cap = cv2.VideoCapture(temp_file_path)
         frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         frame_ids = [round(i) for i in np.linspace(0, frame_count - 1, n_frames)]
         
-        frames = []  # Lista para almacenar los frames extraídos
+        frames = []  # List to store the extracted frames
         success_count = 0
         for frame_id in frame_ids:
             frame, success, id = try_capture_frame(cap, frame_id)
             if success:
-                frame = cv2.resize(frame, (224, 224))  # Redimensionar a 224x224 para el modelo CNN
-                frames.append(frame)  # Agregar el frame redimensionado a la lista
+                frame = cv2.resize(frame, (224, 224))  # Resize to 224x224 for CNN model
+                frames.append(frame)  # Add the resized frame to the list
                 success_count += 1
         
         cap.release()
-        os.unlink(temp_file_path)  # Eliminar el archivo temporal
+        os.unlink(temp_file_path)  # Delete the temporary file
         
         return frames
 
 def try_capture_frame(cap, frame_id):
+    # Tries to capture a frame at the given frame_id
     while frame_id >= 0:
         cap.set(cv2.CAP_PROP_POS_FRAMES, frame_id)
         ret, frame = cap.read()
@@ -191,10 +197,10 @@ class CLIPRegressor(nn.Module):
     def __init__(self, clip_model):
         super(CLIPRegressor, self).__init__()
         self.clip = clip_model
-        self.regressor = nn.Linear(1024, 1)  # Asume que la dimensión del embedding es 512
+        self.regressor = nn.Linear(1024, 1)  # Assumes the embedding dimension is 512
 
     def forward(self, input_ids, attention_mask, pixel_values):
         outputs = self.clip(input_ids=input_ids, attention_mask=attention_mask, pixel_values=pixel_values)
-        # Concatena embeddings de texto e imagen
+        # Concatenate text and image embeddings
         combined_features = torch.cat((outputs.text_embeds, outputs.image_embeds), dim=-1)
         return self.regressor(combined_features)

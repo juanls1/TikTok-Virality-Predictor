@@ -4,10 +4,10 @@ import os
 import csv 
 import numpy as np
 
-# Obtener la ruta absoluta de la carpeta que contiene el módulo
+# Get the absolute path of the folder containing the module
 root_dir = Path.cwd().resolve().parent.parent
 
-# Agregar la ruta de la carpeta al sys.path
+# Add the folder path to sys.path
 sys.path.append(str(root_dir))
 
 import subprocess
@@ -21,28 +21,37 @@ from torch.utils.data import Dataset
 from config.variables import ffmpeg_path
 
 def convert_to_wav(mp3_file, output_folder):
+    """
+    Convert MP3 file to WAV format.
+    """
     wav_file = os.path.splitext(os.path.basename(mp3_file))[0] + '.wav'
     wav_file_path = os.path.join(output_folder, wav_file)
     subprocess.run([os.path.join(root_dir, ffmpeg_path), '-i', mp3_file, '-ac', '1', '-ar', '16000', wav_file_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     return wav_file_path
 
 def transcribe_audio(audio_file):
+    """
+    Transcribe audio from file.
+    """
     recognizer = sr.Recognizer()
     with sr.AudioFile(audio_file) as source:
-        audio_data = recognizer.record(source)  # Grabamos el audio del archivo
+        audio_data = recognizer.record(source)  # Record audio from file
         try:
             language = detect_language(audio_file)
             text = recognizer.recognize_google(audio_data, language=language)
             return text
         except sr.UnknownValueError:
-            print("No se pudo entender el audio")
+            print("Could not understand the audio")
             return "Not understood"
         except sr.RequestError as e:
-            print(f"Error en la solicitud a Google Speech Recognition API: {e}")
+            print(f"Error in request to Google Speech Recognition API: {e}")
             return "Error"
         
 
 def detect_language(audio_file):
+    """
+    Detect language of the audio file.
+    """
     recognizer = sr.Recognizer()
     with sr.AudioFile(audio_file) as source:
         audio_data = recognizer.record(source)
@@ -50,12 +59,14 @@ def detect_language(audio_file):
             language = detect(recognizer.recognize_google(audio_data, show_all=True))
             return language
         except:
-            return "en-EN"  # Establece un idioma predeterminado en caso de error
+            return "en-EN"  # Set a default language in case of error
 
 class WavFileHelper():
     
     def read_file_properties(self, filename):
-
+        """
+        Read properties of the WAV file.
+        """
         wave_file = open(filename,"rb")
         
         riff = wave_file.read(12)
@@ -74,6 +85,9 @@ class WavFileHelper():
     
 # Normalising the spectral centroid for visualisation
 def normalize(x, axis=0):
+    """
+    Normalize data for visualization.
+    """
     return sklearn.preprocessing.minmax_scale(x, axis=axis)
 
 
@@ -115,14 +129,23 @@ def fetch_virality(video_id, df):
     
 class AudioDataset(Dataset):
     def __init__(self, audio_folder, labels_df, feature_extractor):
+        """
+        Initialize AudioDataset object.
+        """
         self.audio_folder = audio_folder
         self.labels_df = labels_df
         self.feature_extractor = feature_extractor
 
     def __len__(self):
+        """
+        Return the length of the dataset.
+        """
         return len(self.labels_df)
 
     def __getitem__(self, idx):
+        """
+        Get item from the dataset.
+        """
         audio_name = os.path.join(self.audio_folder, f"{self.labels_df.iloc[idx]['id']}_audio.wav")
         label = self.labels_df.iloc[idx]['norm_virality']
         

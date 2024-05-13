@@ -103,12 +103,17 @@ def main():
                 image_prediction = 0.000000001
             desnormalized_image_prediction = int((image_prediction * (max_val - min_val) + min_val))
             image_prediction = round(image_prediction, 4)
+            
+            pond_average_prediction = text_prediction*0.45 + audio_prediction*0.45 + image_prediction*0.1
+            pond_desnormalized_average_prediction = int((pond_average_prediction * (max_val - min_val) + min_val))
     
             
             # Display the prediction
             st.success(f"##### Text Virality Prediction: {desnormalized_text_prediction}. (Normalized: {text_prediction})")
             st.success(f"##### Audio Virality Prediction: {desnormalized_audio_prediction}. (Normalized: {audio_prediction})")
             st.success(f"##### Image Virality Prediction: {desnormalized_image_prediction}. (Normalized: {image_prediction})")
+            
+            st.success(f"##### Ponderate Average Virality Prediction: {pond_desnormalized_average_prediction}. (Normalized: {pond_average_prediction})")
             
             
         elif regression_mode == "Mixed":
@@ -123,6 +128,9 @@ def main():
             
             st.success(f"##### Multimodal Virality Prediction: {desnormalized_multimodal_prediction}. (Normalized: {multimodal_prediction})")
             
+        # Display the initial image
+        image_file = images[0]
+        st.image(image_file, caption='Uploaded Image', use_column_width=False)
 
 if __name__ == "__main__":
     main()

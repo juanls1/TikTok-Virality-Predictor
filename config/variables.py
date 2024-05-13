@@ -71,11 +71,6 @@ language_map = {
 model_path = 'data/outputs/texts/'
 
 
-# Image
-
-
-
-
 # Streamlit
 
 # Define paths to your models
