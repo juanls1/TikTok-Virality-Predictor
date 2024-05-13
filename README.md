@@ -102,11 +102,11 @@ tiktok\Scripts\python.exe -m pip install --use-deprecated=legacy-resolver -r req
 
 This repository offers a powerful tool for analyzing the components that contribute to the virality of TikTok videos. With this repository, you can:
 
-- Test New TikTok Videos: Use our Streamlit web page to upload a TikTok video and receive an immediate prediction on its potential for virality. This feature allows content creators to tweak their content based on the attributes of videos that have previously gone viral.
+- **Test New TikTok Videos**: Use our Streamlit web page to upload a TikTok video and receive an immediate prediction on its potential for virality. This feature allows content creators to tweak their content based on the attributes of videos that have previously gone viral.
 
-- Explore Viral Trends: Dive into the analytics of what makes a TikTok video successful. Our repository provides tools to dissect and analyze the key features of viral videos, such as visual appeal, audio engagement, and textual content, giving you insights into current trends in viral content.
+- **Explore Viral Trends**: Dive into the analytics of what makes a TikTok video successful. Our repository provides tools to dissect and analyze the key features of viral videos, such as visual appeal, audio engagement, and textual content, giving you insights into current trends in viral content.
 
-- Expand our study: With a fork of this project you can try to explore the features that we have taken a look into and try to extract a bit more performance than we did!
+- **Expand our study**: With a fork of this project you can try to explore the features that we have taken a look into and try to extract a bit more performance than we did!
 
 Whether you are a social media marketer, a content creator, or a data enthusiast, this repository gives you the tools to understand and predict the dynamics of viral TikTok videos. Start exploring today and enhance your content strategy with data-driven insights!
 
