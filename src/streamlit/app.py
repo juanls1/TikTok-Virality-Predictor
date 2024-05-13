@@ -4,10 +4,10 @@ import os
 import streamlit as st
 import pandas as pd
 
-# Obtener la ruta absoluta de la carpeta que contiene el módulo
+# Get the absolute path of the folder containing the module
 root_dir = Path(__file__).resolve().parent.parent.parent
 
-# Agregar la ruta de la carpeta al sys.path
+# Add the folder path to sys.path
 sys.path.append(str(root_dir))
 
 from src.utils.utils_streamlit import extract_audio, clean_hashtags, create_text_prediction, create_audio_prediction, extract_frames, create_image_prediction, CLIPRegressor, extract_multimodal_features, create_multimodal_prediction
@@ -16,19 +16,19 @@ from src.text.text_utils import clean_text
 
 
 def main():
-    # Configuración de la página
+    # Page configuration
     st.set_page_config(page_title="ADNE - TikTok", layout="centered")
     st.title("TikTok virality prediction app 🚀")
     
     
-    #Carga fichero csv de virality para seleccionar máximo y mínimo para desnormalizar
+    # Load virality csv file to select max and min for denormalization
     df = pd.read_csv(os.path.join(root_dir, 'data/inputs/virality_info.csv'))
     
     min_val = df['virality'].min()
     max_val = df['virality'].max()
 
     
-    # Mensaje de bienvenida
+    # Welcome message
     with st.container():
         st.markdown("""
             Welcome to the TikTok virality prediction app, powered by Juan López and Ignacio Urretavizcaya.
@@ -38,20 +38,20 @@ def main():
             used are based in LSTM, CNN and Transformer architectures.
         """)
 
-    # Método para cargar el video
+    # Method to upload the video
     uploaded_file = st.file_uploader("### Upload a video from TikTok", type=["mp4"])
     
-    # Campo de entrada de texto para el caption
+    # Text input field for the caption
     caption = st.text_input("### Enter the caption (text below the video) (e.g., 'Check out my new dance moves!'):")
 
-    # Campo de entrada de texto para los hashtags
+    # Text input field for the hashtags
     hashtags = st.text_input("### Enter the hashtags (comma separated) (e.g., '#dance, #tiktok, #viral'):")
 
     if uploaded_file:
-        # Procesamiento del video
+        # Video processing
         video_bytes = uploaded_file.read()
         
-        # Aquí puedes llamar a tus funciones para extraer el audio, transcribirlo, y hacer la predicción
+        # Here you can call your functions to extract the audio, transcribe it, and make the prediction
         audio_temp = extract_audio(video_bytes)
         transcription = transcribe_audio(audio_temp)
         
@@ -73,12 +73,11 @@ def main():
             text = f"Transcription: {cleaned_transcription}. Caption: {cleaned_caption}. Hashtags: {cleaned_hashtags}. "
         
         images = extract_frames(video_bytes)
-        multimodal_text, multimodal_image = extract_multimodal_features(video_bytes, transcription, hashtags, caption)
         
-        # Configuraciones de la barra lateral
+        # Sidebar settings
         with st.sidebar:
             st.header("Settings")
-            # Selector de modo de clasificación
+            # Classification mode selector
             regression_mode = st.radio(
                 "Regression Mode:",
                 ("Independent", "Mixed"),
@@ -89,48 +88,41 @@ def main():
         # Prediction based on the selected mode
         if regression_mode == "Independent":
             
-            print(max_val, min_val)
-            
             text_prediction = create_text_prediction(text)
             if text_prediction <= 0:
                 text_prediction = 0.000000001
-            desnormalized_text_prediction = round((text_prediction * (max_val - min_val) + min_val),0)
+            desnormalized_text_prediction = int((text_prediction * (max_val - min_val) + min_val))
             text_prediction = round(text_prediction, 4)
             audio_prediction = create_audio_prediction(audio_temp)
             if audio_prediction <= 0:
                 audio_prediction = 0.000000001
-            desnormalized_audio_prediction = round((audio_prediction * (max_val - min_val) + min_val),0)
+            desnormalized_audio_prediction = int((audio_prediction * (max_val - min_val) + min_val))
             audio_prediction = round(audio_prediction, 4)
             image_prediction = create_image_prediction(images)
             if image_prediction <= 0:
                 image_prediction = 0.000000001
-            desnormalized_image_prediction = round((image_prediction * (max_val - min_val) + min_val),0)
+            desnormalized_image_prediction = int((image_prediction * (max_val - min_val) + min_val))
             image_prediction = round(image_prediction, 4)
-            multimodal_prediction = create_multimodal_prediction(multimodal_text, multimodal_image)
-            if multimodal_prediction <= 0:
-                multimodal_prediction = 0.000000001
-            desnormalized_multimodal_prediction = round((multimodal_prediction * (max_val - min_val) + min_val),0)
-            multimodal_prediction = round(multimodal_prediction, 4)
-
-
+    
             
-            # Mostrar la predicción
+            # Display the prediction
             st.success(f"##### Text Virality Prediction: {desnormalized_text_prediction}. (Normalized: {text_prediction})")
             st.success(f"##### Audio Virality Prediction: {desnormalized_audio_prediction}. (Normalized: {audio_prediction})")
             st.success(f"##### Image Virality Prediction: {desnormalized_image_prediction}. (Normalized: {image_prediction})")
-            st.success(f"##### Multimodal Virality Prediction: {desnormalized_multimodal_prediction}. (Normalized: {multimodal_prediction})")
             
-
             
         elif regression_mode == "Mixed":
             
-            # multi_model = load_model(model_paths["multi_model"])
+            multimodal_text, multimodal_image = extract_multimodal_features(video_bytes, transcription, hashtags, caption)
             
-            # prediction_multi = multi_model.predict([transcription, audio_data, video_bytes])
+            multimodal_prediction = create_multimodal_prediction(multimodal_text, multimodal_image)
+            if multimodal_prediction <= 0:
+                multimodal_prediction = 0.000000001
+            desnormalized_multimodal_prediction = int((multimodal_prediction * (max_val - min_val) + min_val))
+            multimodal_prediction = round(multimodal_prediction, 4)
             
-            prediction_multi = {"text": text}
+            st.success(f"##### Multimodal Virality Prediction: {desnormalized_multimodal_prediction}. (Normalized: {multimodal_prediction})")
             
-        
 
 if __name__ == "__main__":
     main()

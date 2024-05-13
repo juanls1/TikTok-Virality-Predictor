@@ -68,7 +68,6 @@ def extract_multimodal_features(video_bytes, transcription, hashtags, caption):
                 print("Error: No se pudo capturar el frame del medio del video.")
             
             cap.release()  # Liberar el recurso
-            os.unlink(temp_file_path)  # Eliminar el archivo temporal
     
     # Devolver el texto multimodal y el frame del medio
     return text, middle_frame
@@ -116,7 +115,7 @@ def create_multimodal_prediction(text, image):
     clip_model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
     model = CLIPRegressor(clip_model)
 
-    model.load_state_dict(torch.load(os.path.join(root_dir, model_paths["multimodal_model"])))
+    model.load_state_dict(torch.load(os.path.join(root_dir, model_paths["multi_model"]), map_location=torch.device('cpu')))
     text_list = [text]
     image_list = [image]
     input = processor(text=text_list, images=image_list, return_tensors="pt", padding=True, truncation=True)
