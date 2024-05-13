@@ -1,6 +1,8 @@
 import sys
 from pathlib import Path
+import os
 import streamlit as st
+import pandas as pd
 
 # Obtener la ruta absoluta de la carpeta que contiene el módulo
 root_dir = Path(__file__).resolve().parent.parent.parent
@@ -17,6 +19,14 @@ def main():
     # Configuración de la página
     st.set_page_config(page_title="ADNE - TikTok", layout="centered")
     st.title("TikTok virality prediction app 🚀")
+    
+    
+    #Carga fichero csv de virality para seleccionar máximo y mínimo para desnormalizar
+    df = pd.read_csv(os.path.join(root_dir, 'data/inputs/virality_info.csv'))
+    
+    min_val = df['virality'].min()
+    max_val = df['virality'].max()
+
     
     # Mensaje de bienvenida
     with st.container():
@@ -77,17 +87,23 @@ def main():
         # Prediction based on the selected mode
         if regression_mode == "Independent":
             
+            print(max_val, min_val)
+            
             text_prediction = create_text_prediction(text)
+            if text_prediction <= 0:
+                text_prediction = 0.000000001
+            desnormalized_text_prediction = round((text_prediction * (max_val - min_val) + min_val),0)
+            text_prediction = round(text_prediction, 4)
             audio_prediction = create_audio_prediction(audio_temp)
-            # image_model = load_model(model_paths["image_model"])
-            
-            
-            # prediction_audio = audio_model.predict(audio_data)
-            # prediction_image = image_model.predict(video_bytes)
+            if audio_prediction <= 0:
+                audio_prediction = 0.000000001
+            desnormalized_audio_prediction = round((audio_prediction * (max_val - min_val) + min_val),0)
+            audio_prediction = round(audio_prediction, 4)
+
             
             # Mostrar la predicción
-            st.success(f"##### Text Virality Prediction: {text_prediction}")
-            st.success(f"##### Audio Virality Prediction: {audio_prediction}")
+            st.success(f"##### Text Virality Prediction: {desnormalized_text_prediction}. (Normalized: {text_prediction})")
+            st.success(f"##### Audio Virality Prediction: {desnormalized_audio_prediction}. (Normalized: {audio_prediction})")
             
 
             
