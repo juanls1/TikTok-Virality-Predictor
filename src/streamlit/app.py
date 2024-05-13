@@ -3,14 +3,15 @@ from pathlib import Path
 import streamlit as st
 from keras.models import load_model
 
-
 # Obtener la ruta absoluta de la carpeta que contiene el módulo
 root_dir = Path(__file__).resolve().parent.parent.parent
 
 # Agregar la ruta de la carpeta al sys.path
 sys.path.append(str(root_dir))
 
-from utils.utils_streamlit import extract_audio, transcribe_audio
+from src.utils.utils_streamlit import extract_audio, clean_hashtags
+from src.audio.audio_utils import transcribe_audio
+from src.text.text_utils import clean_text
 from config.variables import model_paths
 
 
@@ -31,18 +32,42 @@ def main():
 
     # Método para cargar el video
     uploaded_file = st.file_uploader("Upload a video", type=["mp4"])
+    
+    # Campo de entrada de texto para el caption
+    caption = st.text_input("Enter the caption (text below the video) (e.g., 'Check out my new dance moves!'):")
+
+    # Campo de entrada de texto para los hashtags
+    hashtags = st.text_input("Enter the hashtags (comma separated) (e.g., '#dance, #tiktok, #viral'):")
 
     if uploaded_file:
         # Procesamiento del video
         video_bytes = uploaded_file.read()
         
         # Aquí puedes llamar a tus funciones para extraer el audio, transcribirlo, y hacer la predicción
-        audio_data = extract_audio(video_bytes)
-        transcription = transcribe_audio(audio_data)
+        audio_data, audio_temp = extract_audio(video_bytes)
+        transcription = transcribe_audio(audio_temp)
+        
+        cleaned_transcription = clean_text(transcription)
+        cleaned_caption = clean_text(caption)
+        cleaned_hashtags = clean_hashtags(hashtags)
+        cleaned_hashtags = ', '.join(cleaned_hashtags)
+        
+        if cleaned_caption.strip() == "":
+            cleaned_caption = "None"
+            
+        if cleaned_hashtags.strip() == "":
+            cleaned_hashtags = "None"
+        
+        if cleaned_transcription == "not understood" or cleaned_transcription == "error":
+            text = f"Transcription: None. Caption: {cleaned_caption}. Hashtags: {cleaned_hashtags}. "
+            st.write(f"Transcription {cleaned_transcription}")
+        else:
+            text = f"Transcription: {cleaned_transcription}. Caption: {cleaned_caption}. Hashtags: {cleaned_hashtags}. "
+        
         
         # Configuraciones de la barra lateral
         with st.sidebar:
-            st.header("Conf")
+            st.header("Settings")
             # Selector de modo de clasificación
             regression_mode = st.radio(
                 "Regression Mode:",
@@ -55,21 +80,24 @@ def main():
         if regression_mode == "Independent":
             
             text_model = load_model(model_paths["text_model"])
-            audio_model = load_model(model_paths["audio_model"])
-            image_model = load_model(model_paths["image_model"])
+            # audio_model = load_model(model_paths["audio_model"])
+            # image_model = load_model(model_paths["image_model"])
             
             
-            prediction_text = text_model.predict(transcription)
-            prediction_audio = audio_model.predict(audio_data)
-            prediction_image = image_model.predict(video_bytes)
+            prediction_text = text_model.predict(text)
+            # prediction_audio = audio_model.predict(audio_data)
+            # prediction_image = image_model.predict(video_bytes)
             
-            prediction = {"text": prediction_text, "image": prediction_image, "audio": prediction_audio}
+            prediction = {"text": text, "image": "HEy", "audio": "HEy"}
             
         elif regression_mode == "Mixed":
             
-            multi_model = load_model(model_paths["multi_model"])
+            # multi_model = load_model(model_paths["multi_model"])
             
-            prediction_multi = multi_model.predict([transcription, audio_data, video_bytes])
+            # prediction_multi = multi_model.predict([transcription, audio_data, video_bytes])
+            
+            prediction_multi = {"text": text}
+            
             prediction = {"multi": prediction_multi}
             
         # Mostrar la predicción

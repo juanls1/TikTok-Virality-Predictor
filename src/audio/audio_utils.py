@@ -36,10 +36,10 @@ def transcribe_audio(audio_file):
             return text
         except sr.UnknownValueError:
             print("No se pudo entender el audio")
-            return ""
+            return "Not understood"
         except sr.RequestError as e:
             print(f"Error en la solicitud a Google Speech Recognition API: {e}")
-            return ""
+            return "Error"
         
 
 def detect_language(audio_file):
