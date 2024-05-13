@@ -1,7 +1,13 @@
 from moviepy.editor import VideoFileClip
 import tempfile
 import io
+import os
+import pandas as pd
+import torch
+import torch.nn as nn
 import speech_recognition as sr
+from transformers import AutoTokenizer, AutoModelForMaskedLM, AutoConfig
+from torch.utils.data import DataLoader
 
 import sys
 from pathlib import Path
@@ -12,7 +18,8 @@ root_dir = Path.cwd().resolve().parent.parent
 # Agregar la ruta de la carpeta al sys.path
 sys.path.append(str(root_dir))
 
-
+from config.variables import model_paths
+from src.text.text_utils import CustomDataset
 
 def extract_audio(video_bytes):
     if video_bytes:
@@ -42,3 +49,32 @@ def clean_hashtags(hashtags):
         return clean_hashtags
     else:
         return []
+    
+    
+def create_text_prediction(text):
+    
+    text_model = AutoModelForMaskedLM.from_pretrained("xlm-roberta-base")
+    config = AutoConfig.from_pretrained("xlm-roberta-base")
+    tokenizer = AutoTokenizer.from_pretrained('xlm-roberta-base')
+
+    text_model.config.num_labels = 1  
+    text_model.lm_head.decoder = nn.Linear(text_model.config.hidden_size, 1)  
+    
+    text_model.load_state_dict(torch.load(os.path.join(root_dir, model_paths["text_model"])))
+    
+    df = pd.DataFrame({'text': [text], 'virality': [0]})
+
+    dataset = CustomDataset(df['text'], df['virality'], tokenizer)
+    dataloader = DataLoader(dataset, batch_size=1, shuffle=False)
+    
+    # Set the model to evaluation mode
+    text_model.eval()
+
+    # Evaluation loop
+    with torch.no_grad():
+        for input_ids, attention_mask, labels in dataloader:
+            outputs = text_model(input_ids=input_ids, attention_mask=attention_mask)
+            logits = outputs.logits.mean(dim=1).squeeze(-1)
+            
+    return float(logits[0])
+    

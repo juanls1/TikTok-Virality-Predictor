@@ -1,7 +1,6 @@
 import sys
 from pathlib import Path
 import streamlit as st
-from keras.models import load_model
 
 # Obtener la ruta absoluta de la carpeta que contiene el módulo
 root_dir = Path(__file__).resolve().parent.parent.parent
@@ -9,10 +8,9 @@ root_dir = Path(__file__).resolve().parent.parent.parent
 # Agregar la ruta de la carpeta al sys.path
 sys.path.append(str(root_dir))
 
-from src.utils.utils_streamlit import extract_audio, clean_hashtags
+from src.utils.utils_streamlit import extract_audio, clean_hashtags, create_text_prediction
 from src.audio.audio_utils import transcribe_audio
 from src.text.text_utils import clean_text
-from config.variables import model_paths
 
 
 def main():
@@ -79,16 +77,18 @@ def main():
         # Prediction based on the selected mode
         if regression_mode == "Independent":
             
-            text_model = load_model(model_paths["text_model"])
+            text_prediction = create_text_prediction(text)
             # audio_model = load_model(model_paths["audio_model"])
             # image_model = load_model(model_paths["image_model"])
             
             
-            prediction_text = text_model.predict(text)
             # prediction_audio = audio_model.predict(audio_data)
             # prediction_image = image_model.predict(video_bytes)
             
-            prediction = {"text": text, "image": "HEy", "audio": "HEy"}
+            # Mostrar la predicción
+            st.success(f"##### Text Virality Prediction: {text_prediction}")
+            
+            prediction = {"Text Virality Prediction": text_prediction, "image": "HEy", "audio": "HEy"}
             
         elif regression_mode == "Mixed":
             
