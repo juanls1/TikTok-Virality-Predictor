@@ -140,6 +140,12 @@ def create_audio_prediction(audio_wav):
 
 def create_image_prediction(images):
     image_model = load_model(os.path.join(root_dir, model_paths["image_model"]))
+
+    if len(images) != 8:
+        raise ValueError("Se esperan exactamente 8 imágenes para la predicción.")
+
+    images_array = np.stack(images)  # Esto combina las imágenes en un array de forma (8, 224, 224, 3)
+    images_array = np.expand_dims(images_array, axis=0)
     
     prediction = image_model.predict(images)
     
