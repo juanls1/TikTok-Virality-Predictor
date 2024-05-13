@@ -1,4 +1,4 @@
-# ADNE Final Project: TikTok Sentiment Analysis
+# ADNE Final Project: TikTok Virality Predictor
 
 **Deep learning in Tik Tok by Juan López Segura and Ignacio Urretavizcaya Tato**
 
