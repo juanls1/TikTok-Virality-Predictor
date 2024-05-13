@@ -52,7 +52,7 @@ pip install -r requirements.txt
     - **texts**: Text transcriptions of each video, extracted by us
     - `tiktok_info.json` with information about metrics, audio, creator, etc.
     -  `virality_info.csv` with calculated response metric information
-  - **outputs**: Contains trained models (many not included due to size)
+  - **outputs**: Contains trained models (many not included due to size: https://drive.google.com/drive/folders/1w_4niCuYf2OcJYcZnwcHNgkU9kaeoEBb?usp=drive_link)
     - **audio**: Audio models
     - **texts**: Text models
     - **image**: Image models
