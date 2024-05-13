@@ -61,6 +61,7 @@ langsmith == 0.0.83
 lazy_loader == 0.4
 libclang == 18.1.1
 librosa == 0.10.2
+lightning-utilities == 0.11.2
 llvmlite == 0.42.0
 Markdown == 3.6
 markdown-it-py == 3.0.0
@@ -84,6 +85,7 @@ networkx == 3.3
 nltk == 3.8.1
 numba == 0.59.1
 numpy == 1.26.4
+opencv-python == 4.9.0.80
 opt-einsum == 3.3.0
 optree == 0.11.0
 orjson == 3.10.2
@@ -98,6 +100,7 @@ platformdirs == 4.2.0
 playwright == 1.42.0
 pluggy == 1.4.0
 pooch == 1.8.1
+pretty-errors == 1.2.25
 proglog == 0.1.10
 prompt-toolkit == 3.0.43
 protobuf == 4.25.3
@@ -155,6 +158,8 @@ TikTokApi == 6.2.2
 tokenizers == 0.19.1
 torch == 2.3.0
 torchvision == 0.18.0
+torchaudio==2.3.0
+torchmetrics==1.4.0
 tornado == 6.4
 tqdm == 4.66.2
 traitlets == 5.14.2
