@@ -12,6 +12,7 @@ from sklearn.preprocessing import StandardScaler
 import numpy as np
 from tensorflow.keras.models import load_model
 import cv2
+from transformers import CLIPProcessor, CLIPModel
 
 import sys
 from pathlib import Path
@@ -41,6 +42,36 @@ def extract_audio(video_bytes):
         audio_clip.close()  # Close the audio clip
         
         return audio_tempfile.name
+    
+def extract_multimodal_features(video_bytes, transcription, hashtags, caption):
+    # Componer el texto multimodal
+    text = f"Transcription: {transcription}. Caption: {caption}. Hashtags: {hashtags}"
+    
+    # Preparar la variable para almacenar el frame del medio
+    middle_frame = None
+
+    if video_bytes:
+        with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as temp_file:
+            temp_file.write(video_bytes)
+            temp_file.flush()  # Asegurar que todos los bytes están escritos
+            temp_file_path = temp_file.name
+            
+            # Cargar el video para extraer el frame del medio
+            cap = cv2.VideoCapture(temp_file_path)
+            frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+            middle_frame_index = frame_count // 2
+            cap.set(cv2.CAP_PROP_POS_FRAMES, middle_frame_index)
+            success, middle_frame = cap.read()
+
+            # Verificar que se haya capturado correctamente el frame
+            if not success:
+                print("Error: No se pudo capturar el frame del medio del video.")
+            
+            cap.release()  # Liberar el recurso
+            os.unlink(temp_file_path)  # Eliminar el archivo temporal
+    
+    # Devolver el texto multimodal y el frame del medio
+    return text, middle_frame
     
 
 def clean_hashtags(hashtags):
@@ -78,6 +109,22 @@ def create_text_prediction(text):
             logits = outputs.logits.mean(dim=1).squeeze(-1)
             
     return float(logits[0])
+
+
+def create_multimodal_prediction(text, image):
+    processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
+    clip_model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
+    model = CLIPRegressor(clip_model)
+
+    model.load_state_dict(torch.load(os.path.join(root_dir, model_paths["multimodal_model"])))
+    text_list = [text]
+    image_list = [image]
+    input = processor(text=text_list, images=image_list, return_tensors="pt", padding=True, truncation=True)
+
+    with torch.no_grad():
+        predictions = model(input_ids=input['input_ids'], attention_mask=input['attention_mask'], pixel_values=input['pixel_values'])
+    
+    return predictions[0].item()
 
 
 def create_audio_prediction(audio_wav):
@@ -134,3 +181,15 @@ def try_capture_frame(cap, frame_id):
         frame_id -= 1
     print("No valid frames available to capture.")
     return None, False, -1
+
+class CLIPRegressor(nn.Module):
+    def __init__(self, clip_model):
+        super(CLIPRegressor, self).__init__()
+        self.clip = clip_model
+        self.regressor = nn.Linear(1024, 1)  # Asume que la dimensión del embedding es 512
+
+    def forward(self, input_ids, attention_mask, pixel_values):
+        outputs = self.clip(input_ids=input_ids, attention_mask=attention_mask, pixel_values=pixel_values)
+        # Concatena embeddings de texto e imagen
+        combined_features = torch.cat((outputs.text_embeds, outputs.image_embeds), dim=-1)
+        return self.regressor(combined_features)
