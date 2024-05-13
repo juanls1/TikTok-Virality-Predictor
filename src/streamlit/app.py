@@ -3,6 +3,8 @@ from pathlib import Path
 import os
 import streamlit as st
 import pandas as pd
+import numpy as np
+from PIL import Image
 
 # Get the absolute path of the folder containing the module
 root_dir = Path(__file__).resolve().parent.parent.parent
@@ -129,7 +131,10 @@ def main():
             st.success(f"##### Multimodal Virality Prediction: {desnormalized_multimodal_prediction}. (Normalized: {multimodal_prediction})")
             
         # Display the initial image
-        image_file = images[0]
+        image_data = images[0]
+        image_data = image_data[:, :, ::-1] # Correct color coding
+        
+        image_file = Image.fromarray(np.uint8(image_data))
         st.image(image_file, caption='Uploaded Image', use_column_width=False)
 
 if __name__ == "__main__":
