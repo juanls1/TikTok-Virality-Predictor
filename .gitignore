@@ -14,5 +14,6 @@ frames/
 *.weights.h5
 *.h5
 *.pth
+*.keras
 prueba.ipynb
 *.mp4
