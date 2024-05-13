@@ -83,5 +83,5 @@ model_paths = {
     "text_model": "data/outputs/texts/Text_Final_Model.pth",
     "image_model": "data/outputs/image/Image_Final_Model.keras",
     "audio_model": "data/outputs/audio/Audio_Final_Model.keras",
-    "multi_model": "data/outputs/multi/Multi_Final_Model.pth"
+    "multi_model": "data/outputs/multi-modal/Multimodal_Final_Model.pth"
 }
