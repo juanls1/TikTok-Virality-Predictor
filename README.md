@@ -6,15 +6,12 @@
 
 This project focuses on applying deep learning techniques to TikTok videos to predict their virality, using video, text, and audio data.
 
-<div style="background-color: #f0f0f0; border: 1px solid #ccc; padding: 10px;">
-
-**Nota Importante:** En este proyecto, definimos la viralidad de un video de TikTok como una combinación ponderada de sus vistas, likes, comentarios y shares, ajustada por las correlaciones entre estas variables. La fórmula para calcular la viralidad es:
-
-$$
-\text{Virality} = \text{views} + (1 - \text{corr}_{\text{views, likes}}) \times \text{likes} + (1 - \text{corr}_{\text{views, comments}}) \times \text{comments} + (1 - \text{corr}_{\text{views, shares}}) \times \text{shares}
-$$
-
-</div>
+> [!NOTE]
+> 💥 **Important:** In this project, we define virality as a weighted combination of views, likes, comments, and shares, adjusted by their correlations. The formula to calculate virality is:
+> 
+> $$
+> \text{Virality} = \text{views} + (1 - \text{corr}_{\text{views, likes}}) \times \text{likes} + (1 - \text{corr}_{\text{views, comments}}) \times \text{comments} + (1 - \text{corr}_{\text{views, shares}}) \times \text{shares}
+> $$
 
 
 ## Previous requirements 📋
