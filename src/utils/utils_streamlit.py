@@ -11,6 +11,7 @@ from torch.utils.data import DataLoader
 from sklearn.preprocessing import StandardScaler
 import numpy as np
 from tensorflow.keras.models import load_model
+import cv2
 
 import sys
 from pathlib import Path
@@ -91,3 +92,38 @@ def create_audio_prediction(audio_wav):
     return float(prediction[0])
     
     
+def extract_frames(video_bytes, n_frames=8):
+    if video_bytes:
+        with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as temp_file:
+            temp_file.write(video_bytes)
+            temp_file.flush()  # Asegurar que todos los bytes están escritos
+            temp_file_path = temp_file.name
+        
+        cap = cv2.VideoCapture(temp_file_path)
+        frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        frame_ids = [round(i) for i in np.linspace(0, frame_count - 1, n_frames)]
+        
+        frames = []  # Lista para almacenar los frames extraídos
+        success_count = 0
+        for frame_id in frame_ids:
+            frame, success, id = try_capture_frame(cap, frame_id)
+            if success:
+                frame = cv2.resize(frame, (224, 224))  # Redimensionar a 224x224 para el modelo CNN
+                frames.append(frame)  # Agregar el frame redimensionado a la lista
+                success_count += 1
+        
+        cap.release()
+        os.unlink(temp_file_path)  # Eliminar el archivo temporal
+        
+        return frames
+
+def try_capture_frame(cap, frame_id):
+    while frame_id >= 0:
+        cap.set(cv2.CAP_PROP_POS_FRAMES, frame_id)
+        ret, frame = cap.read()
+        if ret:
+            return frame, True, frame_id
+        print(f"Error capturing frame: {frame_id}, trying previous frame")
+        frame_id -= 1
+    print("No valid frames available to capture.")
+    return None, False, -1

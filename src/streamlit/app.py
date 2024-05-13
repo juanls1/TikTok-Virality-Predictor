@@ -8,7 +8,7 @@ root_dir = Path(__file__).resolve().parent.parent.parent
 # Agregar la ruta de la carpeta al sys.path
 sys.path.append(str(root_dir))
 
-from src.utils.utils_streamlit import extract_audio, clean_hashtags, create_text_prediction, create_audio_prediction
+from src.utils.utils_streamlit import extract_audio, clean_hashtags, create_text_prediction, create_audio_prediction, extract_frames
 from src.audio.audio_utils import transcribe_audio
 from src.text.text_utils import clean_text
 
@@ -62,6 +62,7 @@ def main():
         else:
             text = f"Transcription: {cleaned_transcription}. Caption: {cleaned_caption}. Hashtags: {cleaned_hashtags}. "
         
+        images = extract_frames(video_bytes)
         
         # Configuraciones de la barra lateral
         with st.sidebar:
