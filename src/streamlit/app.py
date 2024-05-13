@@ -8,7 +8,7 @@ root_dir = Path(__file__).resolve().parent.parent.parent
 # Agregar la ruta de la carpeta al sys.path
 sys.path.append(str(root_dir))
 
-from src.utils.utils_streamlit import extract_audio, clean_hashtags, create_text_prediction
+from src.utils.utils_streamlit import extract_audio, clean_hashtags, create_text_prediction, create_audio_prediction
 from src.audio.audio_utils import transcribe_audio
 from src.text.text_utils import clean_text
 
@@ -29,7 +29,7 @@ def main():
         """)
 
     # Método para cargar el video
-    uploaded_file = st.file_uploader("Upload a video", type=["mp4"])
+    uploaded_file = st.file_uploader("Upload a video from TikTok", type=["mp4"])
     
     # Campo de entrada de texto para el caption
     caption = st.text_input("Enter the caption (text below the video) (e.g., 'Check out my new dance moves!'):")
@@ -78,7 +78,7 @@ def main():
         if regression_mode == "Independent":
             
             text_prediction = create_text_prediction(text)
-            # audio_model = load_model(model_paths["audio_model"])
+            audio_prediction = create_audio_prediction(audio_data)
             # image_model = load_model(model_paths["image_model"])
             
             
@@ -87,6 +87,7 @@ def main():
             
             # Mostrar la predicción
             st.success(f"##### Text Virality Prediction: {text_prediction}")
+            st.success(f"##### Audio Virality Prediction: {audio_prediction}")
             
             prediction = {"Text Virality Prediction": text_prediction, "image": "HEy", "audio": "HEy"}
             

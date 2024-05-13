@@ -8,6 +8,9 @@ import torch.nn as nn
 import speech_recognition as sr
 from transformers import AutoTokenizer, AutoModelForMaskedLM, AutoConfig
 from torch.utils.data import DataLoader
+from sklearn.preprocessing import StandardScaler
+import numpy as np
+from tensorflow.keras.models import load_model
 
 import sys
 from pathlib import Path
@@ -20,6 +23,7 @@ sys.path.append(str(root_dir))
 
 from config.variables import model_paths
 from src.text.text_utils import CustomDataset
+from src.audio.audio_utils import load_audio_features
 
 def extract_audio(video_bytes):
     if video_bytes:
@@ -77,4 +81,17 @@ def create_text_prediction(text):
             logits = outputs.logits.mean(dim=1).squeeze(-1)
             
     return float(logits[0])
+
+
+def create_audio_prediction(audio_wav):
+    model = load_model(os.path.join(root_dir, model_paths["audio_model"]))
+    
+    features = load_audio_features(audio_wav)
+    
+    tensor_input = torch.tensor(features).unsqueeze(2)
+    
+    prediction = model.predict(tensor_input)
+    
+    return float(prediction[0])
+    
     
