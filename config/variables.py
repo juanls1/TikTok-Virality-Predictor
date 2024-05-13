@@ -81,7 +81,7 @@ model_path = 'data/outputs/texts/'
 # Define paths to your models
 model_paths = {
     "text_model": "data/outputs/texts/Text_Final_Model.pth",
-    "image_model": "data/outputs/audio/Image_Final_Model.keras",
-    "audio_model": "data/outputs/image/Audio_Final_Model.keras",
+    "image_model": "data/outputs/image/Image_Final_Model.keras",
+    "audio_model": "data/outputs/audio/Audio_Final_Model.keras",
     "multi_model": "data/outputs/multi/Multi_Final_Model.pth"
 }

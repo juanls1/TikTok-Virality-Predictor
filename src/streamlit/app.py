@@ -29,20 +29,20 @@ def main():
         """)
 
     # Método para cargar el video
-    uploaded_file = st.file_uploader("Upload a video from TikTok", type=["mp4"])
+    uploaded_file = st.file_uploader("### Upload a video from TikTok", type=["mp4"])
     
     # Campo de entrada de texto para el caption
-    caption = st.text_input("Enter the caption (text below the video) (e.g., 'Check out my new dance moves!'):")
+    caption = st.text_input("### Enter the caption (text below the video) (e.g., 'Check out my new dance moves!'):")
 
     # Campo de entrada de texto para los hashtags
-    hashtags = st.text_input("Enter the hashtags (comma separated) (e.g., '#dance, #tiktok, #viral'):")
+    hashtags = st.text_input("### Enter the hashtags (comma separated) (e.g., '#dance, #tiktok, #viral'):")
 
     if uploaded_file:
         # Procesamiento del video
         video_bytes = uploaded_file.read()
         
         # Aquí puedes llamar a tus funciones para extraer el audio, transcribirlo, y hacer la predicción
-        audio_data, audio_temp = extract_audio(video_bytes)
+        audio_temp = extract_audio(video_bytes)
         transcription = transcribe_audio(audio_temp)
         
         cleaned_transcription = clean_text(transcription)
@@ -78,7 +78,7 @@ def main():
         if regression_mode == "Independent":
             
             text_prediction = create_text_prediction(text)
-            audio_prediction = create_audio_prediction(audio_data)
+            audio_prediction = create_audio_prediction(audio_temp)
             # image_model = load_model(model_paths["image_model"])
             
             
@@ -89,7 +89,7 @@ def main():
             st.success(f"##### Text Virality Prediction: {text_prediction}")
             st.success(f"##### Audio Virality Prediction: {audio_prediction}")
             
-            prediction = {"Text Virality Prediction": text_prediction, "image": "HEy", "audio": "HEy"}
+
             
         elif regression_mode == "Mixed":
             
@@ -99,10 +99,6 @@ def main():
             
             prediction_multi = {"text": text}
             
-            prediction = {"multi": prediction_multi}
-            
-        # Mostrar la predicción
-        st.write(prediction)
         
 
 if __name__ == "__main__":

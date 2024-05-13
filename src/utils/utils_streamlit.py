@@ -39,11 +39,7 @@ def extract_audio(video_bytes):
         audio_clip.write_audiofile(audio_tempfile.name)
         audio_clip.close()  # Close the audio clip
         
-        # Read the audio file and return the data
-        with open(audio_tempfile.name, 'rb') as audio_file:
-            audio_data = audio_file.read()
-        
-        return audio_data, audio_tempfile.name
+        return audio_tempfile.name
     
 
 def clean_hashtags(hashtags):
@@ -88,7 +84,7 @@ def create_audio_prediction(audio_wav):
     
     features = load_audio_features(audio_wav)
     
-    tensor_input = torch.tensor(features).unsqueeze(2)
+    tensor_input = torch.tensor([features]).unsqueeze(2)
     
     prediction = model.predict(tensor_input)
     
