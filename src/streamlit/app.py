@@ -35,6 +35,8 @@ def main():
         st.markdown("""
             Welcome to the TikTok virality prediction app, powered by Juan López and Ignacio Urretavizcaya.
             
+            Virality: views + (1 - corr_views_likes) * likes + (1 - corr_views_comments) * comments + (1 - corr_views_shares) * shares
+            
             This app is powered by different Deep Learning models to predict the virality of your TikTok videos, using
             the content of the video as input. There are 2 modes available: independent and mixed prediction. The models
             used are based in LSTM, CNN and Transformer architectures.
