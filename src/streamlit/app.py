@@ -10,7 +10,7 @@ root_dir = Path(__file__).resolve().parent.parent.parent
 # Agregar la ruta de la carpeta al sys.path
 sys.path.append(str(root_dir))
 
-from src.utils.utils_streamlit import extract_audio, clean_hashtags, create_text_prediction, create_audio_prediction, extract_frames
+from src.utils.utils_streamlit import extract_audio, clean_hashtags, create_text_prediction, create_audio_prediction, extract_frames, create_image_prediction
 from src.audio.audio_utils import transcribe_audio
 from src.text.text_utils import clean_text
 
@@ -100,11 +100,18 @@ def main():
                 audio_prediction = 0.000000001
             desnormalized_audio_prediction = round((audio_prediction * (max_val - min_val) + min_val),0)
             audio_prediction = round(audio_prediction, 4)
+            image_prediction = create_image_prediction(images)
+            if image_prediction <= 0:
+                image_prediction = 0.000000001
+            desnormalized_image_prediction = round((image_prediction * (max_val - min_val) + min_val),0)
+            image_prediction = round(image_prediction, 4)
+
 
             
             # Mostrar la predicción
             st.success(f"##### Text Virality Prediction: {desnormalized_text_prediction}. (Normalized: {text_prediction})")
             st.success(f"##### Audio Virality Prediction: {desnormalized_audio_prediction}. (Normalized: {audio_prediction})")
+            st.success(f"##### Image Virality Prediction: {desnormalized_image_prediction}. (Normalized: {image_prediction})")
             
 
             

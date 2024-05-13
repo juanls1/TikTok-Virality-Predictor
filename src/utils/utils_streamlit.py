@@ -90,6 +90,13 @@ def create_audio_prediction(audio_wav):
     prediction = model.predict(tensor_input)
     
     return float(prediction[0])
+
+def create_image_prediction(images):
+    image_model = load_model(os.path.join(root_dir, model_paths["image_model"]))
+    
+    prediction = image_model.predict(images)
+    
+    return float(prediction[0])
     
     
 def extract_frames(video_bytes, n_frames=8):
