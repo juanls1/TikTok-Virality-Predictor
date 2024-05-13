@@ -91,6 +91,27 @@ pip install -r requirements.txt
 
 ## What can be done with the repository  🚀
 
+This repository offers a powerful tool for analyzing the components that contribute to the virality of TikTok videos. With this repository, you can:
+
+- Test New TikTok Videos: Use our Streamlit web page to upload a TikTok video and receive an immediate prediction on its potential for virality. This feature allows content creators to tweak their content based on the attributes of videos that have previously gone viral.
+
+- Explore Viral Trends: Dive into the analytics of what makes a TikTok video successful. Our repository provides tools to dissect and analyze the key features of viral videos, such as visual appeal, audio engagement, and textual content, giving you insights into current trends in viral content.
+
+- Expand our study: With a fork of this project you can try to explore the features that we have taken a lok into and try to extract a bit more performance than we did!
+
+Whether you are a social media marketer, a content creator, or a data enthusiast, this repository gives you the tools to understand and predict the dynamics of viral TikTok videos. Start exploring today and enhance your content strategy with data-driven insights!
 
 
 ## Future Improvement Work 🔧
+
+As our project continues to evolve, there are several areas where future work can greatly enhance the robustness and accuracy of our virality prediction model. Here are the key areas for improvement:
+
+- Re-evaluating Virality Metrics: Our dataset includes a range of viral videos, with some outliers that are significantly more viral than others. These outliers can skew the predictive accuracy of our model. Future work could involve refining the virality metric to either adjust for these outliers or redefine what virality means in the context of our analysis. This will help achieve more balanced and representative predictions.
+
+- Enhancing Image Analysis Models: The current image analysis component of our model has shown limitations, as evidenced by a consistently low validation loss of 0.01 across different models. This suggests that the model might not be capturing all relevant visual features effectively. Improving this aspect could involve exploring more sophisticated image processing algorithms or neural network architectures that are better suited for capturing the nuances of visual content that contribute to virality.
+
+- Weight Adjustments in Model Integration: In our Streamlit app, the image analysis model currently holds less weight in the overall prediction due to its lower performance. Future improvements could focus on achieving a more balanced contribution from each model (image, audio, text) by enhancing the weaker models. This would provide a more holistic and accurate assessment of virality factors.
+
+By addressing these areas, we aim to refine our approach and provide a more precise tool for predicting the virality of TikTok videos. This continuous improvement will not only enhance the utility of our repository but also contribute to the broader understanding of social media dynamics.
+
+
